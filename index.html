@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CodeLens - AI Code Reviewer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&amp;family=JetBrains+Mono:wght@450;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-background": "#e5e2e1",
+                        "error-container": "#93000a",
+                        "surface": "#131313",
+                        "on-tertiary-fixed-variant": "#930013",
+                        "on-primary": "#002e6a",
+                        "primary-container": "#4d8eff",
+                        "on-secondary": "#003824",
+                        "on-surface": "#e5e2e1",
+                        "on-primary-fixed": "#001a42",
+                        "on-secondary-fixed-variant": "#005236",
+                        "primary": "#adc6ff",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-secondary-fixed": "#002113",
+                        "tertiary": "#ffb3ad",
+                        "on-error": "#690005",
+                        "inverse-primary": "#005ac2",
+                        "on-primary-container": "#00285d",
+                        "primary-fixed": "#d8e2ff",
+                        "surface-bright": "#3a3939",
+                        "outline": "#8c909f",
+                        "inverse-on-surface": "#313030",
+                        "error": "#ffb4ab",
+                        "secondary-container": "#00a572",
+                        "surface-tint": "#adc6ff",
+                        "secondary": "#4edea3",
+                        "surface-variant": "#353534",
+                        "secondary-fixed": "#6ffbbe",
+                        "surface-dim": "#131313",
+                        "on-tertiary-container": "#5c0008",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-tertiary-fixed": "#410004",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-low": "#1c1b1b",
+                        "on-tertiary": "#68000a",
+                        "tertiary-fixed": "#ffdad7",
+                        "on-surface-variant": "#c2c6d6",
+                        "surface-container-high": "#2a2a2a",
+                        "background": "#131313",
+                        "outline-variant": "#424754",
+                        "surface-container-highest": "#353534",
+                        "surface-container": "#201f1f",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-secondary-container": "#00311f",
+                        "inverse-surface": "#e5e2e1",
+                        "tertiary-container": "#ff5451",
+                        "tertiary-fixed-dim": "#ffb3ad"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "max-width": "1280px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "64px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "code-sm": ["JetBrains Mono"],
+                        "body-base": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-caps": ["JetBrains Mono"],
+                        "headline-md": ["Inter"],
+                        "display-lg-mobile": ["Inter"]
+                    },
+                    "fontSize": {
+                        "code-sm": ["14px", { "lineHeight": "1.5", "letterSpacing": "0em", "fontWeight": "450" }],
+                        "body-base": ["16px", { "lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400" }],
+                        "display-lg": ["64px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "600" }],
+                        "headline-md": ["32px", { "lineHeight": "1.3", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "display-lg-mobile": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "800" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #0d0d0d; }
+        .bg-grid-pattern {
+            background-image: radial-gradient(#262626 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .glow-effect {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+        }
+    </style>
+</head>
+<body class="text-on-background font-body-base bg-grid-pattern min-h-screen flex flex-col relative overflow-x-hidden">
+<!-- Background Pattern overlay -->
+<div class="fixed inset-0 pointer-events-none opacity-20 z-[-1]" style="background: radial-gradient(circle at top right, rgba(59,130,246,0.1), transparent 40%);"></div>
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-desktop h-16 bg-surface/80 backdrop-blur-md border-b border-outline-variant/20">
+<div class="flex items-center gap-4">
+<img alt="CodeLens Logo Mark" class="w-10 h-10 rounded-sm" src="data:image/png;base64,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"/>
+<span class="font-headline-md text-headline-md font-bold text-on-surface tracking-tighter">CodeLens</span>
+</div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="font-label-caps text-label-caps text-primary border-b-2 border-primary pb-1 hover:text-primary transition-colors duration-200" href="#">Features</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">How It Works</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Pricing</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Docs</a>
+</div>
+<div class="hidden md:block">
+<button class="bg-[#3b82f6] text-white px-6 py-2 rounded font-label-caps text-label-caps hover:bg-blue-600 transition-colors glow-effect">Get Started</button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-24 px-margin-desktop max-w-[1280px] mx-auto w-full flex flex-col md:flex-row gap-gutter">
+<!-- SideNavBar / Vertical Integration Icons -->
+<aside class="hidden lg:flex fixed left-0 top-16 h-[calc(100vh-64px)] w-20 flex-col items-center py-6 gap-8 bg-surface-container-lowest border-r border-outline-variant/10">
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="p-3 bg-primary-container text-on-primary-container rounded-lg transition-all duration-300 ease-in-out glow-effect">
+<span class="material-symbols-outlined" data-icon="code" data-weight="fill" style="font-variation-settings: 'FILL' 1;">code</span>
+</div>
+<span class="font-label-caps text-label-caps text-primary opacity-0 group-hover:opacity-100 transition-opacity">JS</span>
+</div>
+<div class="flex flex-col items-center gap-2 group cursor-pointer hover:bg-surface-variant rounded p-2 transition-all duration-300 ease-in-out">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="terminal">terminal</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">PY</span>
+</div>
+<div class="flex flex-col items-center gap-2 group cursor-pointer hover:bg-surface-variant rounded p-2 transition-all duration-300 ease-in-out">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="settings_ethernet">settings_ethernet</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">JAVA</span>
+</div>
+</aside>
+<!-- Hero Section -->
+<div class="flex-1 lg:pl-24 pt-16 lg:pt-32 pb-32 flex flex-col items-center lg:items-start text-center lg:text-left z-10">
+<h1 class="font-display-lg-mobile md:font-display-lg text-on-surface mb-6 max-w-3xl">Review Code Instantly</h1>
+<p class="font-body-base text-body-base text-on-surface-variant mb-10 max-w-xl text-lg">Harness the power of AI to analyze pull requests, detect vulnerabilities, and suggest optimizations in real-time. Built for high-performance engineering teams.</p>
+<div class="flex flex-col sm:flex-row gap-4 mb-20">
+<button class="bg-[#3b82f6] text-white px-8 py-4 rounded font-label-caps text-label-caps hover:bg-blue-600 transition-colors glow-effect flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-icon="rocket_launch">rocket_launch</span>
+                    Start Free Trial
+                </button>
+<button class="bg-transparent border border-[#262626] text-on-surface hover:border-[#404040] hover:text-white px-8 py-4 rounded font-label-caps text-label-caps transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-icon="play_circle">play_circle</span>
+                    View Demo
+                </button>
+</div>
+<!-- Floating Editor Mockup -->
+<div class="w-full max-w-4xl bg-[#141414] border border-[#262626] rounded-xl overflow-hidden shadow-2xl relative glow-effect transform perspective-1000 rotate-y-[-2deg] rotate-x-[1deg] hover:rotate-y-0 hover:rotate-x-0 transition-transform duration-500">
+<!-- Mac OS style header -->
+<div class="bg-[#0a0a0a] border-b border-[#262626] p-3 flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+<div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+<div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+<div class="ml-4 font-code-sm text-code-sm text-outline-variant flex-1 text-center pr-8">src/auth/validate.ts</div>
+</div>
+<div class="flex flex-col md:flex-row">
+<!-- Code Panel -->
+<div class="flex-1 p-6 font-code-sm text-code-sm overflow-x-auto relative bg-[#0d0d0d]">
+<!-- Syntax highlighting structure -->
+<div class="flex line-number-row mb-1 opacity-50">
+<span class="w-8 text-right pr-4 select-none">12</span>
+<span class="text-primary-fixed">export const</span> <span class="text-tertiary">validateToken</span> <span class="text-on-surface">= async</span> (token: <span class="text-secondary-fixed">string</span>) =&gt; {
+                        </div>
+<div class="flex line-number-row mb-1 opacity-50">
+<span class="w-8 text-right pr-4 select-none">13</span>
+<span class="pl-4 text-primary-fixed">if</span> (!token) <span class="text-primary-fixed">throw new</span> <span class="text-secondary-fixed">Error</span>(<span class="text-tertiary-fixed-dim">'Missing token'</span>);
+                        </div>
+<div class="flex line-number-row mb-1 bg-red-900/10 border-l-2 border-red-500 relative">
+<span class="w-8 text-right pr-4 text-red-500/50 select-none">14</span>
+<span class="pl-4 text-on-surface-variant line-through opacity-70"><span class="text-primary-fixed">const</span> user = <span class="text-on-surface">jwt.decode</span>(token);</span>
+</div>
+<div class="flex line-number-row mb-1 bg-green-900/10 border-l-2 border-green-500 relative glow-effect">
+<span class="w-8 text-right pr-4 text-green-500/50 select-none">15</span>
+<span class="pl-4"><span class="text-primary-fixed">const</span> user = <span class="text-primary-fixed">await</span> <span class="text-on-surface">jwt.verify</span>(token, process.env.JWT_SECRET);</span>
+</div>
+<div class="flex line-number-row mb-1 opacity-50">
+<span class="w-8 text-right pr-4 select-none">16</span>
+<span class="pl-4 text-primary-fixed">return</span> user;
+                        </div>
+<div class="flex line-number-row mb-1 opacity-50">
+<span class="w-8 text-right pr-4 select-none">17</span>
+                            }
+                        </div>
+</div>
+<!-- AI Review Panel -->
+<div class="w-full md:w-80 border-t md:border-t-0 md:border-l border-[#262626] bg-[#141414] p-4 flex flex-col gap-4">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-label-caps text-label-caps text-on-surface">AI Review</span>
+</div>
+<!-- Comment 1: Critical -->
+<div class="bg-[#1c1c1c] p-3 rounded border border-red-900/30 relative">
+<div class="absolute -left-[5px] top-4 w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></div>
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-caps text-xs text-red-400 bg-red-900/20 px-2 py-0.5 rounded-full border border-red-900/50">Security Vulnerability</span>
+<span class="font-code-sm text-[10px] text-outline-variant">Line 14</span>
+</div>
+<p class="font-body-base text-sm text-on-surface-variant">Using <span class="font-code-sm text-on-surface bg-surface-variant px-1 rounded">jwt.decode</span> without verification allows potential token forgery. Replaced with <span class="font-code-sm text-on-surface bg-surface-variant px-1 rounded">jwt.verify</span>.</p>
+<div class="mt-3 flex gap-2">
+<button class="font-label-caps text-[10px] bg-surface-variant text-on-surface px-2 py-1 rounded hover:bg-surface-bright transition-colors">Accept Suggestion</button>
+</div>
+</div>
+<!-- Comment 2: Info -->
+<div class="bg-[#1c1c1c] p-3 rounded border border-[#262626] relative">
+<div class="absolute -left-[5px] top-4 w-2 h-2 rounded-full bg-blue-500"></div>
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-caps text-xs text-blue-400 bg-blue-900/20 px-2 py-0.5 rounded-full border border-blue-900/50">Optimization</span>
+<span class="font-code-sm text-[10px] text-outline-variant">Global</span>
+</div>
+<p class="font-body-base text-sm text-on-surface-variant">Consider caching verified tokens to reduce CPU load if called frequently in this middleware.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<section class="w-full py-24 flex flex-col items-center gap-12 z-10 relative">
+<div class="text-center mb-8">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-4">How it Works</h2>
+<div class="h-1 w-20 bg-primary mx-auto rounded-full"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+<!-- Step 1 -->
+<div class="bg-[#141414] border border-outline-variant/20 p-8 rounded-xl hover:border-primary/50 transition-all duration-300 group">
+<div class="w-12 h-12 bg-primary-container text-on-primary-container rounded-lg flex items-center justify-center mb-6 glow-effect">
+<span class="material-symbols-outlined">account_tree</span>
+</div>
+<h3 class="font-headline-md text-xl text-on-surface mb-4">1. Code Ingestion</h3>
+<p class="font-body-base text-on-surface-variant">
+                AI connects to your repository and scans for new <span class="font-code-sm text-primary bg-surface-variant px-1 rounded">PRs</span> automatically.
+            </p>
+</div>
+<!-- Step 2 -->
+<div class="bg-[#141414] border border-outline-variant/20 p-8 rounded-xl hover:border-primary/50 transition-all duration-300 group">
+<div class="w-12 h-12 bg-primary-container text-on-primary-container rounded-lg flex items-center justify-center mb-6 glow-effect">
+<span class="material-symbols-outlined">psychology</span>
+</div>
+<h3 class="font-headline-md text-xl text-on-surface mb-4">2. Deep Context Analysis</h3>
+<p class="font-body-base text-on-surface-variant">
+                Our models analyze logic, security, and performance patterns using <span class="font-code-sm text-primary bg-surface-variant px-1 rounded">LLM</span> context windows.
+            </p>
+</div>
+<!-- Step 3 -->
+<div class="bg-[#141414] border border-outline-variant/20 p-8 rounded-xl hover:border-primary/50 transition-all duration-300 group">
+<div class="w-12 h-12 bg-primary-container text-on-primary-container rounded-lg flex items-center justify-center mb-6 glow-effect">
+<span class="material-symbols-outlined">bolt</span>
+</div>
+<h3 class="font-headline-md text-xl text-on-surface mb-4">3. Actionable Feedback</h3>
+<p class="font-body-base text-on-surface-variant">
+                Get instant suggestions with <span class="font-code-sm text-primary bg-surface-variant px-1 rounded">1-click apply</span> directly in your IDE.
+            </p>
+</div>
+</div>
+</section></main>
+<!-- Footer -->
+<footer class="w-full py-12 px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-6 bg-surface-container-low border-t border-outline-variant/20 z-10 relative">
+<div class="font-headline-md text-headline-md text-on-surface">CodeLens AI</div>
+<div class="flex flex-wrap gap-6 justify-center">
+<a class="font-body-base text-body-base text-on-surface-variant hover:text-on-background transition-opacity opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="font-body-base text-body-base text-on-surface-variant hover:text-on-background transition-opacity opacity-80 hover:opacity-100" href="#">Terms of Service</a>
+<a class="font-body-base text-body-base text-on-surface-variant hover:text-on-background transition-opacity opacity-80 hover:opacity-100" href="#">Security</a>
+<a class="font-body-base text-body-base text-on-surface-variant hover:text-on-background transition-opacity opacity-80 hover:opacity-100" href="#">Status</a>
+</div>
+<div class="font-body-base text-body-base text-secondary opacity-60 text-sm">
+            © 2024 CodeLens AI. Built for the grid.
+        </div>
+</footer>
+</body></html>
