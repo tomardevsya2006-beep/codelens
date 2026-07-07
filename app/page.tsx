@@ -13,18 +13,11 @@ export default function Home() {
   }
 
   return (
-    // FIX 1: Explicitly added 'bg-black' to ensure the base is dark, and forced a relative box wrapper
     <div className="relative min-h-screen w-full bg-black overflow-x-hidden text-white">
       
-      {/* FIX 2: Fixed positioning rules to make the grid float *behind* the pages instead of pushing elements down.
-          Passed dark line properties to Magic UI directly so it matches your pitch black background. */}
-      <div className="fixed inset-0 h-screen w-screen pointer-events-none z-0 overflow-hidden bg-black">
-        <RetroGrid 
-          opacity={0.3} 
-          darkLineColor="#262626" 
-          lightLineColor="#262626" 
-        />
-        {/* Subtle vignette layer to prevent the grid lines from looking too bright/harsh at the top */}
+      {/* Background Layer: Wrapped in a clean absolute opacity manager container */}
+      <div className="fixed inset-0 h-screen w-screen pointer-events-none z-0 overflow-hidden bg-black opacity-30">
+        <RetroGrid />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50" />
       </div>
 
@@ -53,7 +46,7 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Content wrapper: Forced absolute z-index index so everything layers correctly */}
+      {/* Content wrapper */}
       <div className="relative z-10 w-full flex flex-col">
         {/* Main Content */}
         <main className="pt-24 px-margin-desktop max-w-[1280px] mx-auto w-full flex flex-col md:flex-row gap-gutter">

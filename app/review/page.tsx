@@ -4,7 +4,7 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { GlowCard } from "../components/GlowCard";
-import { RetroGrid } from "@/components/ui/retro-grid"; // Adjusted path to use your shadcn alias
+import { RetroGrid } from "@/components/ui/retro-grid"; 
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
@@ -71,16 +71,11 @@ export default function ReviewPage() {
   };
 
   return (
-    // Root container forced to absolute dark mode styling
     <div className="relative min-h-screen w-full bg-black overflow-x-hidden text-white">
       
-      {/* Background Retro Grid System */}
-      <div className="fixed inset-0 h-screen w-screen pointer-events-none z-0 overflow-hidden bg-black">
-        <RetroGrid 
-          opacity={0.3} 
-          darkLineColor="#262626" 
-          lightLineColor="#262626" 
-        />
+      {/* Background Layer */}
+      <div className="fixed inset-0 h-screen w-screen pointer-events-none z-0 overflow-hidden bg-black opacity-30">
+        <RetroGrid />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50" />
       </div>
 
@@ -152,6 +147,7 @@ export default function ReviewPage() {
               </div>
 
               <div className="flex-1 min-h-[450px]">
+                {/* Fixed: Removed invalid backgroundColor option */}
                 <MonacoEditor
                   height="100%"
                   language={language}
@@ -161,7 +157,6 @@ export default function ReviewPage() {
                   options={{
                     fontSize: 14,
                     minimap: { enabled: false },
-                    backgroundColor: "#00000000", // Transparent background wrapper alignment
                   }}
                 />
               </div>
@@ -213,7 +208,7 @@ export default function ReviewPage() {
                     <div className="h-3 bg-neutral-800 rounded w-5/6"></div>
                   </div>
                   <p className="text-xs text-neutral-400 text-center opacity-60 animate-pulse mt-4">
-                    Codelens is analyzing your code...
+                    Codelens is analyzing your code&hellip;
                   </p>
                 </div>
               )}
